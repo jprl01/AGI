@@ -8,4 +8,9 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('clients/', views.getAllClients, name='getAllClients'),
+    path('auction/',views.showAuctionProducts, name='showAuctionProducts'),
+    path('login',views.login, name='login'),
+    path('hello',views.hello, name='hello'),
+
+    
 ]
