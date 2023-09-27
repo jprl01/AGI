@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-y29#6v1mdl@1t94ctnpfxotxq*!6c6_gienz&-3rkssasnw=p0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = []
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'LeilaoApp.apps.LeilaoappConfig'
+    'LeilaoApp.apps.LeilaoappConfig',
 ]
 
 MIDDLEWARE = [
@@ -80,18 +80,18 @@ WSGI_APPLICATION = 'web.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 #TODO
-'''DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'db',
-        'USER': 'TODO',
-        'PASSWORD': 'TODO',
-        'HOST':'IP',
-        'PORT':'port'
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST':'127.0.0.1',
+        'PORT':'5435'
 
     }
 }
-  '''
+
 
 
 # Password validation

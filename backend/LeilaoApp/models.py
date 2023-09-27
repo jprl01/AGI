@@ -9,10 +9,9 @@ class Client(models.Model):
 
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
-    client_Id = models.ForeignKey(Client,on_delete=models.CASCADE,related_name='+')
-    product_Type = models.CharField(max_length=100)
+    client_id = models.ForeignKey(Client,on_delete=models.CASCADE,related_name='+')
+    product_type = models.CharField(max_length=100)
     closed = models.BooleanField()
     product_url = models.CharField(max_length=100)
     actual_value = models.IntegerField()
     product_buyer = models.CharField(max_length=100)
-    
