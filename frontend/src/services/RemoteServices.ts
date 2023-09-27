@@ -25,8 +25,9 @@ httpClient.interceptors.request.use(
 export default class RemoteServices {
 
   
-    static async demoAdminLogin(): Promise<String> {
-      return httpClient.get('/api').then(() => {
+    static async getHello(): Promise<String> {
+        console.log("getHello");
+      return httpClient.get('/api/hello').then(() => {
         return "Hello World";
       });
     }

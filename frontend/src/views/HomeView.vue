@@ -1,18 +1,24 @@
-<template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
-  </div>
-</template>
+<script setup lang="ts">
+import { Ref, ref } from 'vue';
+import TheWelcome from '../components/TheWelcome.vue'
+import RemoteService from '@/services/RemoteServices'
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
+const hello: Ref<String> = ref('');
 
-@Options({
-  components: {
-    HelloWorld,
-  },
-})
-export default class HomeView extends Vue {}
+teste();
+async function teste(){
+  await RemoteService.getHello().then((response) => {
+    console.log(response);  
+      hello.value = response;
+    })
+    console.log(hello.value);
+};
+
 </script>
+
+<template>
+  <main>
+    <h1>Home2 {{ hello }}</h1>
+    <TheWelcome />
+  </main>
+</template>
