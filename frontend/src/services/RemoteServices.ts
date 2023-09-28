@@ -41,7 +41,7 @@ export default class RemoteServices {
       });
     }
 
-    static aync login(user: UserDto): Promise<String> {
+    static async login(user: UserDto): Promise<String> {
       return httpClient.post('/api/login/',user).then((response: AxiosResponse) => {
         console.log(response.data);
         return response.data;
