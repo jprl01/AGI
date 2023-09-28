@@ -13,43 +13,67 @@ from LeilaoApp.serializers import ProductSerializer
 
 from .models import Client
 from .models import Product
+from django.db import transaction
 # Create your views here.
 
 @csrf_protect
+@api_view(['POST'])
+@parser_classes([JSONParser])
+def addBalance(request,format=None):
+    if request.method=='POST':
+        client_id_loggedin = request.COOKIES.get('client_id')
+        add_balance = request.data.get('balance_value')
+        with transaction.atomic():
+            client = Client.objects.get(client_id= client_id_loggedin)
+            client.balance= client.balance + add_balance
+            client.save()
+
+        response= Response({"Added balance successfully"}, status=201)
+        return response
+    else:
+        return Response({"error": "request method fail"}, status=404)
+        
+
+@csrf_protect
 @api_view(['GET'])
-def getAllClients(self,format=None):
-    clients = Client.objects.all()
-    print(clients)
-    serializer = ClientSerializer(clients, many=True)
-    print(serializer)
-    return Response(serializer.data)
+def getAllClients(request,format=None):
+    if request.method=='GET':
+        clients = Client.objects.all()
+        print(clients)
+        serializer = ClientSerializer(clients, many=True)
+        print(serializer)
+        return Response(serializer.data)
+    else:
+        return Response({"error": "request method fail"}, status=404)
     
 
 @csrf_protect
 @api_view(['GET'])
-def showClientAuctionProducts(self,request,format=None):
+def showClientAuctionProducts(request,format=None):
     if request.method == 'GET':
         client_id_loggedin = request.COOKIES.get('client_id')
-        products = Product.objects.all(client_id=client_id_loggedin, closed=False)
+        products = Product.objects.filter(client_id=client_id_loggedin, closed=False)
         print(products)
         serializer = ProductSerializer(products, many=True)
         print(serializer)
         return Response(serializer.data)
+    else:
+        return Response({"error": "request method fail"}, status=404)
                
 
 
 @csrf_protect
 @api_view(['POST'])
 @parser_classes([JSONParser])
-def login(request,username,password,format=None):
+def login(request,format=None):
     if request.method == 'POST':
         client_username = request.data.get('client_username')
         client_password = request.data.get('client_password')
-        client = Client.objects.filter(client_username=client_username,client_password=client_password)
+        client = Client.objects.get(client_username=client_username,client_password=client_password)
         if client:
             client_serializer = ClientSerializer(client, many=True)
            
-            response= Response(client_serializer.data)
+            response= Response({"Login Sucess"}, status=201)
             response.set_cookie('client_id',client.client_id)
             return response
         else:
@@ -61,8 +85,12 @@ def login(request,username,password,format=None):
 @api_view(['GET'])
 def logout(request,format=None):
     if request.method == 'GET':
-        response.set_cookie('client_id',{})
-        return response
+        if request.COOKIES.get('client_id'):
+            response= Response({"Logout Sucess"}, status=201)
+            response.set_cookie('client_id',{})
+            return response
+        else:
+            return request({"Logout Fail"})
     else:
         return Response({"error": "request method fail"}, status=404)
 
@@ -99,7 +127,7 @@ def auctionProduct(request,value,id,product_buyer,format=None):
 
 @csrf_protect
 @api_view(['GET'])
-def showAuctionProducts(self,format=None):
+def showAuctionProducts(format=None):
     products = Product.objects.filter(closed=False)
     print(products)
     serializer = ProductSerializer(products, many=True)
@@ -111,8 +139,11 @@ def showAuctionProducts(self,format=None):
 @api_view(['POST'])
 @parser_classes([JSONParser])
 def createAuctionProducts(request):
-    if request.method == 'POST':
-        proc_serializer = ProductSerializer(data=request.data)
+    if request.method == 'POST': 
+        client_id = request.COOKIES.get("client_id")
+        cookie_client_id = {'client_id': client_id}
+        request_data= {**request.data, **cookie_client_id}
+        proc_serializer = ProductSerializer(data=request_data)
         print(proc_serializer)
         if proc_serializer.is_valid():
             proc_serializer.save()
@@ -124,7 +155,7 @@ def createAuctionProducts(request):
 
 @csrf_protect
 @api_view(['GET'])
-def closeProductAuction(self,request,id, format=None):
+def closeProductAuction(request,id, format=None):
     if request.method == 'GET':
         client_id_loggedin = request.COOKIES.get('client_id')
         product = Product.objects.filter(product_id=id,client_Id=client_id_loggedin)
@@ -135,7 +166,12 @@ def closeProductAuction(self,request,id, format=None):
             return Response({"message": "error"}, status=201)
  
 
-
+@csrf_protect
+@api_view(['GET'])
+def home(request):
+    response = Response("HOME")
+    response.set_cookie('client_id',{})
+    return response
 
 
 

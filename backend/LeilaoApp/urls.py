@@ -17,6 +17,9 @@ urlpatterns = [
     path('showAuctionProducts/',views.showAuctionProducts, name='showAuctionProducts'),
     path('createAuctionProducts/',views.createAuctionProducts, name='createProducts'),
     path('closeAuctionProducts/',views.closeProductAuction, name='closeProducts'),
+    path('logout/', views.logout, name='logout'),
+    path('home/', views.home, name='home'),
+    path('addBallance/', views.addBalance, name='addBalance'),
 
     
 ]

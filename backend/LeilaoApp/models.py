@@ -6,6 +6,7 @@ class Client(models.Model):
     client_id = models.AutoField(primary_key=True)
     client_username= models.CharField(max_length=100)
     client_password = models.CharField(max_length=100)
+    balance = models.IntegerField()
 
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
@@ -15,3 +16,13 @@ class Product(models.Model):
     product_url = models.CharField(max_length=100)
     actual_value = models.IntegerField()
     product_buyer = models.CharField(max_length=100)
+
+
+
+'''{
+    "product_type" : "camisa",
+    "closed" : false,
+    "product_url" : "models.CharField(max_length=100)",
+    "actual_value" : 200,
+    "product_buyer" : "zeric"
+}'''

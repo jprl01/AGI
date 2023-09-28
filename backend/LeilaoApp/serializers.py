@@ -5,7 +5,7 @@ from LeilaoApp.models import Client,Product
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model=Client
-        fields=('client_id','client_username','client_password')
+        fields=('client_id','client_username','client_password','balance')
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
