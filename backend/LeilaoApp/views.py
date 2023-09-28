@@ -27,9 +27,10 @@ def getAllClients(self,format=None):
 
 @csrf_protect
 @api_view(['GET'])
-def showClientAuctionProducts(self,request,client_id,format=None):
+def showClientAuctionProducts(self,request,format=None):
     if request.method == 'GET':
-        products = Product.objects.all(client_id=client_id, closed=False)
+        client_id_loggedin = request.COOKIES.get('client_id')
+        products = Product.objects.all(client_id=client_id_loggedin, closed=False)
         print(products)
         serializer = ProductSerializer(products, many=True)
         print(serializer)
@@ -38,17 +39,32 @@ def showClientAuctionProducts(self,request,client_id,format=None):
 
 
 @csrf_protect
-@api_view(['GET'])
+@api_view(['POST'])
+@parser_classes([JSONParser])
 def login(request,username,password,format=None):
-    if request.method == 'GET':
-        client = Client.objects.filter(client_username=username,client_password=password)
+    if request.method == 'POST':
+        client_username = request.data.get('client_username')
+        client_password = request.data.get('client_password')
+        client = Client.objects.filter(client_username=client_username,client_password=client_password)
         if client:
             client_serializer = ClientSerializer(client, many=True)
-            return Response(client_serializer.data)
+           
+            response= Response(client_serializer.data)
+            response.set_cookie('client_id',client.client_id)
+            return response
         else:
             return Response({"error": "Unknown Client"}, status=404)
     else:
             return Response({"error": "request method fail"}, status=404)
+
+@csrf_protect
+@api_view(['GET'])
+def logout(request,format=None):
+    if request.method == 'GET':
+        response.set_cookie('client_id',{})
+        return response
+    else:
+        return Response({"error": "request method fail"}, status=404)
 
 @csrf_protect
 @api_view(['POST'])
@@ -108,9 +124,10 @@ def createAuctionProducts(request):
 
 @csrf_protect
 @api_view(['GET'])
-def closeProductAuction(self,request,id,id_client, format=None):
+def closeProductAuction(self,request,id, format=None):
     if request.method == 'GET':
-        product = Product.objects.filter(product_id=id,client_Id=id_client)
+        client_id_loggedin = request.COOKIES.get('client_id')
+        product = Product.objects.filter(product_id=id,client_Id=client_id_loggedin)
         if product:
             product.closed=True
             
