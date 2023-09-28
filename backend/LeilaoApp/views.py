@@ -22,14 +22,18 @@ from django.db import transaction
 def addBalance(request,format=None):
     if request.method=='POST':
         client_id_loggedin = request.COOKIES.get('client_id')
-        add_balance = request.data.get('balance_value')
-        with transaction.atomic():
-            client = Client.objects.get(client_id= client_id_loggedin)
-            client.balance= client.balance + add_balance
-            client.save()
+        if client_id_loggedin is not None:
+            add_balance = request.data.get('balance_value')
+            with transaction.atomic():
+                client = Client.objects.get(client_id= client_id_loggedin)
+                client.balance= client.balance + add_balance
+                client.virtual_balance = client.virtual_balance + add_balance
+                client.save()
 
-        response= Response({"Added balance successfully"}, status=201)
-        return response
+            response= Response({"message :Added balance successfully"}, status=201)
+            return response
+        else:
+            return Response({"error":"please login first"}, status=201)
     else:
         return Response({"error": "request method fail"}, status=404)
         
@@ -73,7 +77,7 @@ def login(request,format=None):
         if client:
             client_serializer = ClientSerializer(client, many=True)
            
-            response= Response({"Login Sucess"}, status=201)
+            response= Response({"message :Login Sucess"}, status=201)
             response.set_cookie('client_id',client.client_id)
             return response
         else:
@@ -86,11 +90,11 @@ def login(request,format=None):
 def logout(request,format=None):
     if request.method == 'GET':
         if request.COOKIES.get('client_id'):
-            response= Response({"Logout Sucess"}, status=201)
+            response= Response({"message : Logout Sucess"}, status=201)
             response.set_cookie('client_id',{})
             return response
         else:
-            return request({"Logout Fail"})
+            return request({"message : Logout Fail"})
     else:
         return Response({"error": "request method fail"}, status=404)
 
@@ -115,14 +119,26 @@ def createClient(request,format=None):
 
 @csrf_protect
 @api_view(['POST'])
-def auctionProduct(request,value,id,product_buyer,format=None):
+def auctionProduct(request,format=None):
     if request.method == 'POST':
-        product = Product.objects.filter(product_id= id)
-        if product.actual_value < value :
-            product.actual_value = value
-            product.product_buyer = product_buyer
-        else:
-            return Response({"message": "Someone already paid more"}, status=201)
+        client_id_loggedin = request.COOKIES.get('client_id')
+        with transaction.atomic():
+            value = request.data.get('value')
+            client = Client.objects.get(client_id=client_id_loggedin)
+            product = Product.objects.filter(product_id= id)
+            if product.actual_value <  value and client.virtual_balance >= value:
+                old_buyer = Client.objects.get(client_id=product.product_buyer)
+                old_buyer.virtual_balance = client.virtual_balance + product.actual_value
+
+                client.virtual_balance = client.virtual_balance - value
+                product.actual_value = value
+                product.product_buyer = client_id_loggedin
+
+                old_buyer.save()
+                product.save()
+                client.save()
+            else:
+                return Response({"message": "Someone already paid more"}, status=201)
             
 
 @csrf_protect
@@ -158,12 +174,20 @@ def createAuctionProducts(request):
 def closeProductAuction(request,id, format=None):
     if request.method == 'GET':
         client_id_loggedin = request.COOKIES.get('client_id')
-        product = Product.objects.filter(product_id=id,client_Id=client_id_loggedin)
-        if product:
-            product.closed=True
-            
-        else:
-            return Response({"message": "error"}, status=201)
+        with transaction.atomic():
+            product = Product.objects.filter(product_id=id,client_Id=client_id_loggedin)
+            if product:
+                client = Client.objects.get(client_id=client_id_loggedin)
+                client.balance=client.balance + product.actual_value
+                client_buyer = Client.objects.get(client_id=client.product_buyer)
+                client_buyer.balance = client_buyer.balance - product.actual_value
+                client.save()
+                client_buyer.save()
+                product.save()
+                product.closed=True
+                
+            else:
+                return Response({"message": "error"}, status=201)
  
 
 @csrf_protect
@@ -181,7 +205,7 @@ def hello(request):
     return Response("HELLO WORLD")
     
 
-# {
-#     "client_username":"teste",
-#     "client_password":"1234"
-# }
+''' {
+     "client_username":"teste",
+     "client_password":"1234"
+ }'''
