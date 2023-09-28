@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-
+import UserDto from '@/models/user/UserDto';
 const httpClient = axios.create();
 httpClient.defaults.timeout = 50000;
 httpClient.defaults.baseURL = import.meta.env.VITE_ROOT_API;
@@ -29,6 +29,15 @@ export default class RemoteServices {
         console.log("getHello");
       return httpClient.get('/api/hello').then(() => {
         return "Hello World";
+      });
+
+    }
+
+    // create a function that sent a json with user and password to the backend
+    static async registerUser(user: UserDto): Promise<String> {
+      return httpClient.post('/api/createClient/', user).then((response: AxiosResponse) => {
+        console.log(response.data);
+        return response.data;
       });
     }
 }
