@@ -124,8 +124,10 @@ def auctionProduct(request,format=None):
         client_id_loggedin = request.COOKIES.get('client_id')
         with transaction.atomic():
             value = request.data.get('value')
+            product_id = request.data.get('product_id')
+
             client = Client.objects.get(client_id=client_id_loggedin)
-            product = Product.objects.filter(product_id= id)
+            product = Product.objects.filter(product_id= product_id)
             if product.actual_value <  value and client.virtual_balance >= value:
                 old_buyer = Client.objects.get(client_id=product.product_buyer)
                 old_buyer.virtual_balance = client.virtual_balance + product.actual_value
@@ -171,7 +173,7 @@ def createAuctionProducts(request):
 
 @csrf_protect
 @api_view(['GET'])
-def closeProductAuction(request,id, format=None):
+def closeProductAuction(request,format=None):
     if request.method == 'GET':
         client_id_loggedin = request.COOKIES.get('client_id')
         with transaction.atomic():

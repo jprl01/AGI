@@ -40,4 +40,66 @@ export default class RemoteServices {
         return response.data;
       });
     }
+
+    static aync login(user: UserDto): Promise<String> {
+      return httpClient.post('/api/login/',user).then((response: AxiosResponse) => {
+        console.log(response.data);
+        return response.data;
+      });
+    }
+    static async logout(): Promise<String>{
+      return httpClient.get('/api/logout').then((response: AxiosResponde) =>{
+        console.log(response.data);
+        return response.data;
+      });
+    }
+
+    static async createProduct(product: ProductDto): Promise<String>{
+      return httpClient.post('/api/createAuctionProducts/',product).then((response: AxiosResponse) => {
+        console.log(response.data);
+        return response.data;
+      });
+    }
+
+    static async addBalance(value: int): Promise<String>{
+      let balance = {"value": value}
+      return httpClient.post('/api/addBallance/',balance).then((response: AxiosResponse) => {
+        console.log(response.data);
+        return response.data;
+      });
+    }
+
+    static async showAuctionProducts(): Promise<String[]>{
+      return httpClient.post('/api/showAuctionProducts/').then((response: AxiosResponse) => {
+        console.log(response.data);
+        return response.data;
+      });
+    }
+
+    static async AuctionClientProducts(): Promise<String[]>{
+      return httpClient.post('/api/clientAuctionProducts/').then((response: AxiosResponse) => {
+        console.log(response.data);
+        return response.data;
+      });
+    }
+
+    static aync AuctionProduct(value: int,product_id: int ): Promise<String[]>{
+      let auctionvalue = {"value": value ,"product_id":product_id}
+      return httpClient.post('/api/auctionProduct/',auctionvalue).then((response: AxiosResponse) => {
+        console.log(response.data);
+        return response.data;
+      });
+    }
+
+    
+    static async CloseAuctionProducts(product_id: int): Promise<String[]>{
+      let close = {"product_id":product_id}
+      return httpClient.post('/api/closeAuctionProducts/',close).then((response: AxiosResponse) => {
+        console.log(response.data);
+        return response.data;
+      });
+    }
+
 }
+
+    
