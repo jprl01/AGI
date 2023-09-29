@@ -14,32 +14,42 @@ from LeilaoApp.serializers import ProductSerializer
 from .models import Client
 from .models import Product
 from django.db import transaction
+
+from rest_framework.authentication import TokenAuthentication
+from dj_rest_auth.jwt_auth import JWTCookieAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes,authentication_classes
+
 # Create your views here.
 
 @csrf_protect
 @api_view(['POST'])
 @parser_classes([JSONParser])
+@authentication_classes([TokenAuthentication, JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
 def addBalance(request,format=None):
+    print(request.user)
     if request.method=='POST':
-        client_id_loggedin = request.COOKIES.get('client_id')
-        if client_id_loggedin is not None:
-            add_balance = request.data.get('balance_value')
-            with transaction.atomic():
-                client = Client.objects.get(client_id= client_id_loggedin)
-                client.balance= client.balance + add_balance
-                client.virtual_balance = client.virtual_balance + add_balance
-                client.save()
+        client_username = request.user
+        with transaction.atomic():
+            client = Client.objects.get(client_username=client_username)
+            if client:
 
-            response= Response({"message :Added balance successfully"}, status=201)
-            return response
-        else:
-            return Response({"error":"please login first"}, status=201)
+                client.balance= client.balance + request.data.get('balance_value')
+                client.virtual_balance = client.virtual_balance + request.data.get('balance_value')
+                client.save()
+                return Response({"message :Added balance successfully"}, status=201)
+            else:
+                return Response({"error": "Unknown Client"}, status=404)
+
     else:
         return Response({"error": "request method fail"}, status=404)
         
 
 @csrf_protect
 @api_view(['GET'])
+@authentication_classes([TokenAuthentication, JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
 def getAllClients(request,format=None):
     if request.method=='GET':
         clients = Client.objects.all()
@@ -98,9 +108,10 @@ def logout(request,format=None):
     else:
         return Response({"error": "request method fail"}, status=404)
 
-@csrf_protect
 @api_view(['POST'])
 @parser_classes([JSONParser])
+@authentication_classes([])
+@permission_classes([])
 def createClient(request,format=None):
     if request.method == 'POST':
         client_username = request.data.get('client_username')
@@ -208,6 +219,5 @@ def hello(request):
     
 
 ''' {
-     "client_username":"teste",
-     "client_password":"1234"
+     "client_username":"teste"
  }'''
