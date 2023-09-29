@@ -55,13 +55,14 @@ const password = ref('')
 async function submit() {
 
   const user: UserDto = {
-    client_username: username.value,
-    client_password: password.value
+    username: username.value,
+    password: password.value
   }
 
 
   store.login(user);
-  console.log(document.cookie)
+  router.push({ path: '/'})
+
 //   store.login(user);
 
 //   await RemoteService.login(user).then((response) => {

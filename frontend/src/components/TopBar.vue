@@ -1,17 +1,18 @@
 <template>
   <nav>
     <v-app-bar style="height: 60px; top: 0px">
-      <v-toolbar title="Application">
+      <v-toolbar title="AGI-Auction">
         <v-toolbar-items>
           
-          
-          <v-btn to="/">Auctios</v-btn>
+          <v-btn  to="/">Auctios</v-btn>
           <!-- create a button to call the api HelloWorld -->
           <v-btn to="/hello">My Auctions</v-btn>
           <v-btn to="/hello">My Auctions</v-btn>
           
-          <v-btn to="/login">Login</v-btn>
+          <v-btn v-if="!store.isLoggedIn" to="/login">Login</v-btn>
           <v-btn to="/register">Register</v-btn>
+          <v-btn v-if="store.isLoggedIn" @click="logout">Logout</v-btn>
+
         </v-toolbar-items>
       </v-toolbar>
     </v-app-bar>
@@ -25,5 +26,12 @@ import EcosystemIcon from './icons/IconEcosystem.vue'
 import CommunityIcon from './icons/IconCommunity.vue'
 import SupportIcon from './icons/IconSupport.vue'
 
+import { useAuthStore } from '@/stores/counter'
 
+const store = useAuthStore();
+
+function logout(){
+  store.logout();
+
+}
 </script>

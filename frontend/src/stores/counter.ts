@@ -6,16 +6,17 @@ import RemoteServices from '@/services/RemoteServices';
 export const useAuthStore = defineStore('auth', {
   persist: true,
   state: () => ({
-    user: null as UserDto | null,
-    token: '',
+    accessToken: '',
+    refreshToken: '',
+    authUser: null,
     isLoggedIn: false,
   }),
   getters: {
     getUser(): UserDto | null {
       return this.user;
     },
-    getToken(): string {
-      return this.token;
+    getAccessToken(): string {
+      return this.accessToken;
     },
     getIsLoggedIn(): boolean {
       return this.isLoggedIn;
@@ -23,19 +24,41 @@ export const useAuthStore = defineStore('auth', {
   },  
   actions: {
     async login(user: UserDto) {
-      console.log("login");
       await RemoteServices.login(user).then((response) => {
-        
-        if(response['status'] == 201){
-          console.log(response['status']);
-          
-          this.user = user;
-          this.isLoggedIn = true;
-          
-        }
+        console.log(response)
+        this.authUser = response.data.user;
+        this.accessToken = response.data["access_token"];
+        this.refreshToken = response.data["refresh_token"];
+        this.isLoggedIn = true;
       });
       // console.log(authResponse);
+    },
+    async logout() {
+      if (this.isLoggedIn) {
+          this.authUser = null;
+          this.accessToken = '';
+          this.refreshToken = '';
+          this.isLoggedIn = false;
+      }
     }
   },
+  // userLogin (context, usercredentials) {
+  //   return new Promise((resolve, reject) => {
+  //     axios.post('/api/clients/login/', {
+  //       "username": usercredentials.username,
+  //       "password": usercredentials.password
+  //     },{ withCredentials: true })
+  //     .then(response => {
+  //       context.commit("setAuthUser", response.data.user);
+  //       console.log(response.data)
+  //       context.commit('updateStorage', { access: response.data["access_token"], refresh: response.data["refresh_token"] }) 
+  //       // context.commit("serUsername", usercredentials.username);
+  //       resolve()
+  //     })
+  //     .catch(err => {
+  //       reject(err)
+  //     })
+  // })
+  // }
 
 });

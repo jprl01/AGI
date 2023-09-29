@@ -57,8 +57,9 @@ const passwordRule = reactive([
 
 async function submit() {
   const user: UserDto = {
-    client_username: username.value,
-    client_password: password.value
+    "username": username.value,
+    "password1": password.value,
+    "password2": password.value
   }
 
   await RemoteService.registerUser(user).then((response) => {
