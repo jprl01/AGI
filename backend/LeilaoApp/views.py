@@ -65,48 +65,20 @@ def getAllClients(request,format=None):
 @api_view(['GET'])
 def showClientAuctionProducts(request,format=None):
     if request.method == 'GET':
-        client_id_loggedin = request.COOKIES.get('client_id')
-        products = Product.objects.filter(client_id=client_id_loggedin, closed=False)
-        print(products)
-        serializer = ProductSerializer(products, many=True)
-        print(serializer)
-        return Response(serializer.data)
+        client_username = request.user
+        with transaction.atomic():      
+        
+            products = Product.objects.filter(client_username=client_username, closed=False)
+            print(products)
+            serializer = ProductSerializer(products, many=True)
+            print(serializer)
+            return Response(serializer.data)
     else:
         return Response({"error": "request method fail"}, status=404)
                
 
 
-@csrf_protect
-@api_view(['POST'])
-@parser_classes([JSONParser])
-def login(request,format=None):
-    if request.method == 'POST':
-        client_username = request.data.get('client_username')
-        client_password = request.data.get('client_password')
-        client = Client.objects.get(client_username=client_username,client_password=client_password)
-        if client:
-            client_serializer = ClientSerializer(client, many=True)
-           
-            response= Response({"message :Login Sucess"}, status=201)
-            response.set_cookie('client_id',client.client_id)
-            return response
-        else:
-            return Response({"error": "Unknown Client"}, status=404)
-    else:
-            return Response({"error": "request method fail"}, status=404)
 
-@csrf_protect
-@api_view(['GET'])
-def logout(request,format=None):
-    if request.method == 'GET':
-        if request.COOKIES.get('client_id'):
-            response= Response({"message : Logout Sucess"}, status=201)
-            response.set_cookie('client_id',{})
-            return response
-        else:
-            return request({"message : Logout Fail"})
-    else:
-        return Response({"error": "request method fail"}, status=404)
 
 @api_view(['POST'])
 @parser_classes([JSONParser])
@@ -132,12 +104,13 @@ def createClient(request,format=None):
 @api_view(['POST'])
 def auctionProduct(request,format=None):
     if request.method == 'POST':
-        client_id_loggedin = request.COOKIES.get('client_id')
+        client_username = request.user
+        
         with transaction.atomic():
             value = request.data.get('value')
             product_id = request.data.get('product_id')
 
-            client = Client.objects.get(client_id=client_id_loggedin)
+            client = Client.objects.get(client_username=client_username)
             product = Product.objects.filter(product_id= product_id)
             if product.actual_value <  value and client.virtual_balance >= value:
                 old_buyer = Client.objects.get(client_id=product.product_buyer)
@@ -169,8 +142,9 @@ def showAuctionProducts(format=None):
 @parser_classes([JSONParser])
 def createAuctionProducts(request):
     if request.method == 'POST': 
-        client_id = request.COOKIES.get("client_id")
-        cookie_client_id = {'client_id': client_id}
+        client_username = request.user        
+        
+        cookie_client_id = {'client_username': client_username}
         request_data= {**request.data, **cookie_client_id}
         proc_serializer = ProductSerializer(data=request_data)
         print(proc_serializer)
@@ -186,11 +160,12 @@ def createAuctionProducts(request):
 @api_view(['GET'])
 def closeProductAuction(request,format=None):
     if request.method == 'GET':
-        client_id_loggedin = request.COOKIES.get('client_id')
+        client_username = request.user
+        
         with transaction.atomic():
             product = Product.objects.filter(product_id=id,client_Id=client_id_loggedin)
             if product:
-                client = Client.objects.get(client_id=client_id_loggedin)
+                client = Client.objects.get(client_username=client_username)
                 client.balance=client.balance + product.actual_value
                 client_buyer = Client.objects.get(client_id=client.product_buyer)
                 client_buyer.balance = client_buyer.balance - product.actual_value
