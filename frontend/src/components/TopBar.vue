@@ -10,7 +10,7 @@
           <v-btn to="/hello">My Auctions</v-btn>
           <v-btn to="/hello">My Auctions</v-btn>
           
-          <v-btn to="/">Login</v-btn>
+          <v-btn to="/login">Login</v-btn>
           <v-btn to="/register">Register</v-btn>
         </v-toolbar-items>
       </v-toolbar>

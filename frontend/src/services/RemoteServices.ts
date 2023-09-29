@@ -37,14 +37,15 @@ export default class RemoteServices {
     static async registerUser(user: UserDto): Promise<String> {
       return httpClient.post('/api/createClient/', user).then((response: AxiosResponse) => {
         console.log(response.data);
+        // return sucess if status is 200 and error if status is different
         return response.data;
       });
     }
 
     static async login(user: UserDto): Promise<String> {
       return httpClient.post('/api/login/',user).then((response: AxiosResponse) => {
-        console.log(response.data);
-        return response.data;
+        console.log(response);
+        return response;
       });
     }
     static async logout(): Promise<String>{
@@ -83,7 +84,7 @@ export default class RemoteServices {
       });
     }
 
-    static aync AuctionProduct(value: int,product_id: int ): Promise<String[]>{
+    static async AuctionProduct(value: int,product_id: int ): Promise<String[]>{
       let auctionvalue = {"value": value ,"product_id":product_id}
       return httpClient.post('/api/auctionProduct/',auctionvalue).then((response: AxiosResponse) => {
         console.log(response.data);

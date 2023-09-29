@@ -1,6 +1,7 @@
 import './assets/main.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import piniaPluginPersistedState from 'pinia-plugin-persistedstate';
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
@@ -17,7 +18,10 @@ const vuetify = createVuetify({
 
 const app = createApp(App)
 
-app.use(createPinia())
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedState);
+
+app.use(pinia)
 app.use(router)
 app.use(vuetify)
 
