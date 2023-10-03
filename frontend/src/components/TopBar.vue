@@ -6,8 +6,7 @@
           
           <v-btn  to="/">Auctios</v-btn>
           <!-- create a button to call the api HelloWorld -->
-          <v-btn to="/hello">My Auctions</v-btn>
-          <v-btn to="/hello">My Auctions</v-btn>
+          <v-btn to="/auction/user">My Auctions</v-btn>
           
           <v-btn v-if="!store.isLoggedIn" to="/login">Login</v-btn>
           <v-btn to="/register">Register</v-btn>

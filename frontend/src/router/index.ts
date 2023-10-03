@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import AboutView from '@/views/helloWorld/AboutView.vue'
+import UserAuctionView from '@/views/Auction/UserAuctionView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -53,6 +54,25 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/User/ProfileView.vue'),
+      
+    },
+    {
+      path: '/auction',
+      name: 'auction',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/Auction/AuctionView.vue'),
+      children: [
+        {
+          path: 'user',
+          name: 'my-auction',
+          component: UserAuctionView,
+          meta: {
+            title: 'My Auction',
+          },
+        },
+      ]
       
     },
   ]

@@ -3,6 +3,7 @@ import type { AxiosResponse } from 'axios';
 import UserDto from '@/models/user/UserDto';
 import { useAuthStore } from '@/stores/counter';
 import AuthDto from '@/models/user/AuthDto';
+import ProductDto from '@/models/user/ProductDto';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 50000;
@@ -93,10 +94,12 @@ export default class RemoteServices {
       });
     }
 
-    static async AuctionClientProducts(): Promise<String[]>{
-      return httpClient.post('/api/clientAuctionProducts/').then((response: AxiosResponse) => {
+    static async getClientAuction(): Promise<ProductDto[]>{
+      return httpClient.get('/api/clientAuctionProducts/').then((response: AxiosResponse) => {
         console.log(response.data);
-        return response.data;
+        return response.data.map((product: any) => {
+          return new ProductDto(product);
+        });
       });
     }
 
