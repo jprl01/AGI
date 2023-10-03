@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     getUser(): UserDto | null {
-      return this.user;
+      return this.authUser;
     },
     getAccessToken(): string {
       return this.accessToken;

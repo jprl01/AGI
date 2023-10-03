@@ -10,6 +10,8 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('clients/', views.getAllClients, name='getAllClients'),
+    path('client/', views.getClient, name='getClient'),
+
     path('auction/',views.showAuctionProducts, name='showAuctionProducts'),
     # path('login/',views.login, name='login'),
     path('hello/',views.hello, name='hello'),

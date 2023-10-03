@@ -34,9 +34,10 @@ def addBalance(request,format=None):
         with transaction.atomic():
             client = Client.objects.get(client_username=client_username)
             if client:
-
-                client.balance= client.balance + request.data.get('balance_value')
-                client.virtual_balance = client.virtual_balance + request.data.get('balance_value')
+                print(type(request.data.get('value')))
+                print(type(client.virtual_balance))
+                client.balance= client.balance + request.data.get('value')
+                client.virtual_balance = client.virtual_balance + request.data.get('value')
                 client.save()
                 return Response({"message :Added balance successfully"}, status=201)
             else:
@@ -44,6 +45,24 @@ def addBalance(request,format=None):
 
     else:
         return Response({"error": "request method fail"}, status=404)
+
+@csrf_protect
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication, JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
+def getClient(request,format=None):
+    print(request.user)
+    if request.method=='GET':
+        client_username = request.user
+        client = Client.objects.get(client_username=client_username)
+        print(client)
+        serializer = ClientSerializer(client, many=False)
+        print(serializer)
+        return Response(serializer.data,status=200)
+    else:
+        return Response({"error": "request method fail"}, status=404)
+    
+
         
 
 @csrf_protect

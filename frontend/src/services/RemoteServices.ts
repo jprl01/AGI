@@ -2,6 +2,7 @@ import axios from 'axios';
 import type { AxiosResponse } from 'axios';
 import UserDto from '@/models/user/UserDto';
 import { useAuthStore } from '@/stores/counter';
+import AuthDto from '@/models/user/AuthDto';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 50000;
@@ -33,6 +34,16 @@ export default class RemoteServices {
         return "Hello World";
       });
 
+    }
+
+    // create a function that sent a json with user and password to the backend
+    static async getClient(): Promise<UserDto> {
+      return httpClient.get('/api/client').then((response: AxiosResponse) => {
+        console.log(response.data);
+        // return sucess if status is 200 and error if status is different
+        console.log(new AuthDto(response.data));
+        return new AuthDto(response.data);
+      });
     }
 
     // create a function that sent a json with user and password to the backend
@@ -68,9 +79,8 @@ export default class RemoteServices {
       });
     }
 
-    static async addBalance(value: int): Promise<String>{
-      let balance = {"value": value}
-      return httpClient.post('/api/addBallance/',balance).then((response: AxiosResponse) => {
+    static async addBalance(value: number): Promise<String>{
+      return httpClient.post('/api/addBalance/',{"value": value}).then((response: AxiosResponse) => {
         console.log(response.data);
         return response.data;
       });

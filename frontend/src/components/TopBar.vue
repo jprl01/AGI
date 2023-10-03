@@ -12,6 +12,7 @@
           <v-btn v-if="!store.isLoggedIn" to="/login">Login</v-btn>
           <v-btn to="/register">Register</v-btn>
           <v-btn v-if="store.isLoggedIn" @click="logout">Logout</v-btn>
+          <v-btn v-if="store.isLoggedIn" to="/profile">Profile</v-btn>
 
         </v-toolbar-items>
       </v-toolbar>
